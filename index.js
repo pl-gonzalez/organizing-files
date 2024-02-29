@@ -1,13 +1,19 @@
 import fs from 'fs-extra';
 import path from 'path'; // Outros OS tem a barra invertida. path lida com isso
 import inquirer from 'inquirer';
-
+import figlet from 'figlet';
+import chalk from 'chalk';
+import gradient from 'gradient-string'
 const mainOptions = [
     {
         type: 'list',
         name: 'main',
         message: 'File organizer - O que deseja fazer?',
         choices: [
+            {
+                name: 'Organizar pasta atual',
+                value: 'ORGANIZAR_PASTA_ATUAL'
+            },
             {
                 name: 'Organizar uma pasta',
                 value: 'ORGANIZAR_PASTA'
@@ -18,11 +24,11 @@ const mainOptions = [
     }
 ]
 
-const pastaOptions = [
+const pastaPath = [
     {
         type: 'input',
         name: 'pasta',
-        message: 'Qual o caminho da pasta?',
+        message: 'Organizar pasta atual',
         validate: async (input) => {
             try{
                 fs.lstatSync(input).isDirectory()
@@ -40,14 +46,16 @@ const extImagens = ['.jpeg', '.png']
 const extCompactos = ['.zip']
 const extExecutaveis = ['.exe']
 
+const timer = (ms = 1000) => new Promise((r) => setTimeout(r, ms));
+
 async function mainMenu() {
     const data = await inquirer.prompt(mainOptions);
     return data.main
 }
 
 async function folderMenu() {
-    const data = await inquirer.prompt(pastaOptions);
-    return data.pasta
+    const data = await inquirer.prompt(pastaPath);
+    return data.pasta 
 }
 
 async function organizarDiretorio(caminho) {
@@ -101,7 +109,7 @@ async function organizarArquivos(caminho){
 async function moveDocumentos(origem, destino){
     try {
       await fs.move(origem, destino)
-      console.log(`${path.parse(origem).base} movido para ${destino}`)
+      console.log(`${path.parse(origem).name} ${chalk.green('MOVIDO PARA')} ${chalk.cyan(destino)}`)
     } catch (err) {
       console.error(err)
     }
@@ -109,16 +117,37 @@ async function moveDocumentos(origem, destino){
 
 
 
+
+async function introMsg(msg){
+    figlet(msg, function (err, data) {
+    if (err) {
+      console.log("Something went wrong...");
+      console.dir(err);
+      return;
+    }
+    console.log(gradient('pink', 'cyan')(data))
+    });
+    await timer();
+    console.log('\n\n')
+}
+
+
+await introMsg("Files  Organizer")
 /**
  * Opcoes do menu:
  *      - Organizar uma pasta
  *      - TAGs
  *      - Monitorar pasta
  */
+
+
 switch(await mainMenu()){
     case 'ORGANIZAR_PASTA':
         let folder_Options = await folderMenu()
         if(folder_Options != null) await organizarDiretorio(folder_Options) // Aqui ja tenho o caminho da pasta
+        break;
+    case 'ORGANIZAR_PASTA_ATUAL':
+        await organizarDiretorio('./pasta atual')
         break;
 }
 
