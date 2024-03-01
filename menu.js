@@ -21,8 +21,14 @@ const mainOptions = [
             {
                 name: 'TAGs',
                 value: 'TAG'
-            }, 
-             'Monitoramento'
+            },{
+                name: 'Monitoramento',
+                value: 'MONITORAMENTO'
+            },
+            {
+                name: 'Sair',
+                value: 'EXIT'
+            }
             ]
     }
 ]
@@ -40,6 +46,14 @@ const tagOptions = [
             {
                 name: 'Adicionar TAG',
                 value: 'ADICIONAR_TAG'
+            },
+            {
+                name: 'Remover TAG',
+                value: 'REMOVER_TAG'
+            },
+            {
+                name: 'Sair',
+                value: 'EXIT'
             }
             ]
     }
@@ -91,10 +105,58 @@ const incluirTagOptions = [
         default: false
     }
 ]
+const removerTagsOptions = [
+    {
+        type: 'rawlist',
+        name: 'removerTag',
+        message: 'Qual TAG deseja remover?   ',
+        choices: async (input) => {
+            let obj = [];
+            tagsJson.forEach((tag) => {
+                obj.push(
+                {
+                    name: `TAG: ${tag.tagName} \t | Diretório: ${tag.tagPath}`,
+                    value: tag.tagName
+                })
+            })
+
+            return [
+                ...obj,
+                
+                {
+                    name: 'Sair',
+                    value: 'EXIT'
+                }
+            ]
+        }
+    }
+]
+const monitoramentoOptions = [
+    {
+        type: 'list',
+        name: 'monitoramento',
+        message: 'Monitoramento:   ',
+        choices: [
+            {
+                name:'Pastas monitoradas',
+                value: 'PASTAS_MONITORADAS'
+            },
+            {
+                name:'Adicionar pasta ao monitoramento',
+                value: 'ADICIONAR_PASTA'
+            },
+            {
+                name:'Remover pasta do monitoramento',
+                value: 'REMOVER_PASTA'
+            }
+        ]
+    }
+]
 
 
 export async function mainMenu() {
     const data = await inquirer.prompt(mainOptions);
+    console.log('main menu:', data.main)
     return data.main
 }
 
@@ -111,7 +173,18 @@ export async function tagMenu() {
     const data = await inquirer.prompt(tagOptions);
     return data.tagMenu 
 }
+
 export async function incluirTags() {
     const data = await inquirer.prompt(incluirTagOptions);
     return data.aplicarTag 
+}
+
+export async function removerTagMenu() {
+    const data = await inquirer.prompt(removerTagsOptions);
+    return data.removerTag 
+}
+
+export async function monitoramento(){
+    const data = await inquirer.prompt(monitoramentoOptions);
+    return data.monitoramento 
 }
