@@ -1,12 +1,13 @@
 {
-  "name": "organizing-files",
+  "name": "file-organizer",
   "version": "1.0.0",
-  "description": "",
+  "description": "Organizador de arquivos por tags personalizadas",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "file-organizer": "node index.js"
   },
+  "bin": "./index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",

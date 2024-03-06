@@ -27,9 +27,7 @@ export async function adicionarTag(tagName, tagPath = ''){
 }
 
 export async function removerTag(tagRemovida){
-    const tagsObj = {
-        ...tagsJson
-    }
+
     const index = tagsJson.findIndex((tag) => tag.tagName == tagRemovida)
     if(index !== -1) {
         tagsJson.splice(index, 1)
@@ -45,6 +43,7 @@ export async function removerTag(tagRemovida){
 
 
 export async function organizarPorTags(caminho) {
+    
     try {
         /**
          * Verificar se existe uma tag em cada arquivo 

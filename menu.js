@@ -1,7 +1,9 @@
 import inquirer from 'inquirer';
 import fs from "fs-extra"
+
 import tagsJson from './data/tags.json' assert { type: 'json' };
-    
+import { listaTags, adicionarTag, removerTag } from './tag_handler.js';
+import { organizarDiretorio } from './diretorio_handler.js';
 
 
 const mainOptions = [
@@ -21,9 +23,6 @@ const mainOptions = [
             {
                 name: 'TAGs',
                 value: 'TAG'
-            },{
-                name: 'Monitoramento',
-                value: 'MONITORAMENTO'
             },
             {
                 name: 'Sair',
@@ -131,32 +130,10 @@ const removerTagsOptions = [
         }
     }
 ]
-const monitoramentoOptions = [
-    {
-        type: 'list',
-        name: 'monitoramento',
-        message: 'Monitoramento:   ',
-        choices: [
-            {
-                name:'Pastas monitoradas',
-                value: 'PASTAS_MONITORADAS'
-            },
-            {
-                name:'Adicionar pasta ao monitoramento',
-                value: 'ADICIONAR_PASTA'
-            },
-            {
-                name:'Remover pasta do monitoramento',
-                value: 'REMOVER_PASTA'
-            }
-        ]
-    }
-]
 
 
 export async function mainMenu() {
     const data = await inquirer.prompt(mainOptions);
-    console.log('main menu:', data.main)
     return data.main
 }
 
@@ -164,14 +141,42 @@ export async function pasta() {
     const data = await inquirer.prompt(pastaPath);
     return data.pasta 
 }
-export async function tag() {
+async function tag() {
     const data = await inquirer.prompt(tagAdicionada);
     return data.tag 
 }
 
 export async function tagMenu() {
     const data = await inquirer.prompt(tagOptions);
-    return data.tagMenu 
+
+    switch(data.tagMenu){
+        case 'TAGS_REGISTRADAS':
+            await listaTags()                    
+            break;
+            
+        case 'ADICIONAR_TAG':
+            let tagAdicionada = await tag()
+            let caminhoPasta = await pasta()
+            
+            //Diretorio e tag ja validados no input em tag() e pasta()
+            if(caminhoPasta != null) {
+                await adicionarTag(tagAdicionada, caminhoPasta)
+                break;
+            }
+            break;     
+        
+        case 'REMOVER_TAG':
+            const nomeTag = await removerTagMenu()
+            if(nomeTag == 'EXIT') process.exit(0)
+            await removerTag(nomeTag)
+            break
+
+        case 'EXIT':
+            process.exit(0)
+                
+        }
+
+    // return data.tagMenu 
 }
 
 export async function incluirTags() {
@@ -179,12 +184,7 @@ export async function incluirTags() {
     return data.aplicarTag 
 }
 
-export async function removerTagMenu() {
+async function removerTagMenu() {
     const data = await inquirer.prompt(removerTagsOptions);
     return data.removerTag 
-}
-
-export async function monitoramento(){
-    const data = await inquirer.prompt(monitoramentoOptions);
-    return data.monitoramento 
 }
